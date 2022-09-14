@@ -30,17 +30,18 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
+          name: Restore Yarn Package Cache
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: gradle dependencies
-
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
       - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+            - .yarn/cache
+            - .yarn/unplugged
 
       # run tests!
       - run: gradle test
